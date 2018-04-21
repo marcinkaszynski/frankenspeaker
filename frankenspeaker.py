@@ -9,8 +9,9 @@ from PIL import ImageFont
 from PIL import ImageDraw
 
 
-MAX_VOL = 100
-MIN_VOL = 0
+VOL_MIN = 0
+VOL_MAX = 50
+VOL_STEP = 2
 
 
 class Vis(object):
@@ -19,7 +20,7 @@ class Vis(object):
         self.disp.begin()
 
         self.image = Image.new('1', (self.disp.width, self.disp.height))
-        self.font = ImageFont.load_default()
+        self.font = ImageFont.truetype("/usr/share/fonts/truetype/roboto/Roboto-Thin.ttf", 15)
 
         self.volume = None
         self.dirty = False
@@ -35,7 +36,7 @@ class Vis(object):
 
         draw = ImageDraw.Draw(self.image)
         draw.rectangle((0, 0, self.disp.width-1, self.disp.height-1), outline=0, fill=0)
-        draw.text((0, 0), '%d / %d' % (self.volume, MAX_VOL), font=self.font, fill=255)
+        draw.text((0, 0), '%d / %d' % (self.volume, VOL_MAX), font=self.font, fill=255)
         self.disp.image(self.image)
         self.disp.display()
         self.dirty = False
@@ -60,11 +61,11 @@ def update_volume(buttons, vol):
     new_vol = vol
 
     if buttons.up:
-        new_vol += 5
+        new_vol += VOL_STEP
     if buttons.down:
-        new_vol -= 5
+        new_vol -= VOL_STEP
 
-    new_vol = min(max(new_vol, MIN_VOL), MAX_VOL)
+    new_vol = min(max(new_vol, VOL_MIN), VOL_MAX)
     return (new_vol, vol != new_vol)
 
 
